@@ -1,7 +1,6 @@
 package com.seto.userregistration.model;
 
 import javax.persistence.*;
-import java.util.Set;
 
 @Entity
 @Table(name = "user")
@@ -17,8 +16,6 @@ public class User {
     @Transient
     private String passwordConfirm;
 
-    @ManyToMany
-    private Set<Role> roles;
 
     public Long getId() {
         return id;
@@ -52,11 +49,4 @@ public class User {
         this.passwordConfirm = passwordConfirm;
     }
 
-    public Set<Role> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(Set<Role> roles) {
-        this.roles = roles;
-    }
 }
