@@ -13,28 +13,29 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
+
+import javax.sql.DataSource;
 
 @Configuration
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private static final Logger LOGGER = LoggerFactory.getLogger(SecurityConfiguration.class);
+    @Autowired
+    private DataSource datasource;
+    @Autowired
+    private UserDetailsService userDetailsService;
 
+    @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable().
-                authorizeRequests()
-                /*.antMatchers(HttpMethod.POST, SecurityConstants.SIGN_UP_URL)
-                .permitAll()
-                .antMatchers(HttpMethod.GET, SecurityConstants.VERIFICATION_EMAIL_URL)
-                .permitAll()
-                .antMatchers(HttpMethod.POST, SecurityConstants.PASSWORD_RESET_REQUEST_URL)
-                .permitAll()
-                .antMatchers(HttpMethod.POST, SecurityConstants.PASSWORD_RESET_URL)
-                .permitAll()*/
-                .antMatchers("/h2-console/**")
-                .permitAll()
-                .anyRequest().authenticated().and()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+        http.antMatcher("/h2-console/**").authorizeRequests().anyRequest().permitAll();
+        http.authorizeRequests().antMatchers("/**").access("hasRole('USER')");
+        http.authorizeRequests().antMatchers("/actuator/**").access("hasRole('ADMIN')");
+
+
+        http.authorizeRequests().anyRequest().authenticated();
+        http.rememberMe().userDetailsService(userDetailsService);
+        http.httpBasic();
+
     }
 
     @Autowired
@@ -48,8 +49,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Bean
     public CommandLineRunner initDatabase(UserRepository repository) {
         return args -> {
-            LOGGER.info("Preloading " + repository.save(new User("admin", "admin")));
-            LOGGER.info("Preloading " + repository.save(new User("user", "password")));
+            LOGGER.info("Preloading " + repository.save(new User("admin", "admin","ADMIN")));
+            LOGGER.info("Preloading " + repository.save(new User("user", "password","USER")));
         };
     }
 

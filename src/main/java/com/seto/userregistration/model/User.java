@@ -11,8 +11,35 @@ public class User {
     private @Id
     @GeneratedValue
     Long id;
-    private String name;
+    private String username;
     private String password;
+
+    public String getUsername() {
+        return username;
+    }
+
+    public User() {
+    }
+
+    public User(String username, String password, String role) {
+        this.username = username;
+        this.password = password;
+        this.role = role;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    private String role;
 
     public Long getId() {
         return id;
@@ -22,18 +49,6 @@ public class User {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public User(String name, String password) {
-        this.name = name;
-        this.password = password;
-    }
 
     public String getPassword() {
         return password;
