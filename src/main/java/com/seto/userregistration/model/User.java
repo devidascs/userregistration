@@ -1,21 +1,18 @@
 package com.seto.userregistration.model;
 
-import javax.persistence.*;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 
 @Entity
-@Table(name = "user")
 public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
-    private String username;
-
+    private @Id
+    @GeneratedValue
+    Long id;
+    private String name;
     private String password;
-
-    @Transient
-    private String passwordConfirm;
-
 
     public Long getId() {
         return id;
@@ -25,12 +22,17 @@ public class User {
         this.id = id;
     }
 
-    public String getUsername() {
-        return username;
+    public String getName() {
+        return name;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public User(String name, String password) {
+        this.name = name;
+        this.password = password;
     }
 
     public String getPassword() {
@@ -40,13 +42,4 @@ public class User {
     public void setPassword(String password) {
         this.password = password;
     }
-
-    public String getPasswordConfirm() {
-        return passwordConfirm;
-    }
-
-    public void setPasswordConfirm(String passwordConfirm) {
-        this.passwordConfirm = passwordConfirm;
-    }
-
 }
