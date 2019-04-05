@@ -27,11 +27,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.antMatcher("/h2-console/**").authorizeRequests().anyRequest().permitAll();
-        http.authorizeRequests().antMatchers("/**").access("hasRole('USER')");
-        http.authorizeRequests().antMatchers("/actuator/**").access("hasRole('ADMIN')");
-
-
+        //http.antMatcher("/h2-console/**").authorizeRequests().anyRequest().permitAll();
+        //http.authorizeRequests().antMatchers("/**").access("hasRole('USER')");
+        //http.authorizeRequests().antMatchers("/actuator/**").access("hasRole('ADMIN')");
+        http.authorizeRequests().antMatchers("/user/**").access("hasRole('USER')");
+        http.authorizeRequests().antMatchers("/admin/**").access("hasRole('ADMIN')");
         http.authorizeRequests().anyRequest().authenticated();
         http.rememberMe().userDetailsService(userDetailsService);
         http.httpBasic();
@@ -41,7 +41,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         auth.inMemoryAuthentication()
-                .withUser("user").password("user").roles("USER")
+                .withUser("user").password("password").roles("USER")
                 .and()
                 .withUser("admin").password("admin").roles("ADMIN");
     }
@@ -49,8 +49,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Bean
     public CommandLineRunner initDatabase(UserRepository repository) {
         return args -> {
-            LOGGER.info("Preloading " + repository.save(new User("admin", "admin","ADMIN")));
-            LOGGER.info("Preloading " + repository.save(new User("user", "password","USER")));
+            LOGGER.info("Preloading " + repository.save(new User("admin", "admin", "ADMIN")));
+            LOGGER.info("Preloading " + repository.save(new User("user", "password", "USER")));
         };
     }
 

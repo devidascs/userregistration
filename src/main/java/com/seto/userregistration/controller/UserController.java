@@ -4,13 +4,11 @@ package com.seto.userregistration.controller;
 import com.seto.userregistration.exception.UserNotFoundException;
 import com.seto.userregistration.model.User;
 import com.seto.userregistration.repo.UserRepository;
-import org.springframework.hateoas.Resource;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
-
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 @RestController
 public class UserController {
@@ -24,34 +22,40 @@ public class UserController {
     // Aggregate root
 
     // tag::get-aggregate-root[]
-    @GetMapping("/getAllUsers")
+    @GetMapping("/admin/getAllUsers")
     public List<User> getAllUsers() {
         return repository.findAll();
     }
     // end::get-aggregate-root[]
 
-    @PostMapping("/user")
-    public User getUser(@RequestBody User newEmployee) {
+    @PostMapping("/admin/createuser")
+    public User createuser(@RequestBody User newEmployee) {
         return repository.save(newEmployee);
     }
 
     // Single item
 
     // tag::get-single-item[]
-    @GetMapping("/users/{id}")
-    public Resource<User> one(@PathVariable Long id) {
-
+    @GetMapping("/user/{id}")
+    public User getUser(@PathVariable Long id) {
         User employee = repository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(id));
-
-        return new Resource<>(employee,
-                linkTo(methodOn(UserController.class).one(id)).withSelfRel(),
-                linkTo(methodOn(UserController.class).getAllUsers()).withRel("employees"));
+        return employee;
     }
     // end::get-single-item[]
 
+    @PostMapping("/user/uploadpicture/{id}")
+    public String handleFileUpload(@RequestParam("file") MultipartFile file, @PathVariable Long id,
+                                   RedirectAttributes redirectAttributes) {
 
-    @DeleteMapping("/users/{id}")
+        redirectAttributes.addFlashAttribute("message",
+                "You successfully uploaded " + file.getOriginalFilename() + "!");
+
+        return "Success";
+    }
+
+
+    @DeleteMapping("/admin/users/{id}")
     void deleteEmployee(@PathVariable Long id) {
         repository.deleteById(id);
     }
